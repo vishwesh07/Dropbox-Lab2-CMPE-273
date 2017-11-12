@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const mongo = require('./mongo');
+const moment = require('moment-timezone');
 const mongoURL = "mongodb://localhost:27017/dropbox";
 
 function handle_request(data,callback){
@@ -11,7 +12,11 @@ function handle_request(data,callback){
     mongo.connect(mongoURL, function(){
 
         console.log('Connected to mongo at: ' + mongoURL);
+
         const coll = mongo.collection('users');
+
+        console.log("Username in SignIn "+data.data.username);
+
         console.log("In passport collection defined"+coll);
 
         coll.findOne({Username: data.data.username}, function(err, user){
@@ -24,15 +29,22 @@ function handle_request(data,callback){
                     console.log("In successful signIn");
                     res.code = "201";
                     res.value = "Success signIn";
-                    res.data = {username: user.Username, firstname: user.Firstname, lastname: user.Lastname};
+                    res.data = {username: data.data.username, firstname: user.Firstname, lastname: user.Lastname};
+
+                    let d = new Date();
+                    let days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+                    let day = days[d.getDay()];
+                    let time = moment().tz("America/Los_Angeles").format();
+
+                    console.log(`day ${day} - time ${time} `);
 
                     const coll1 = mongo.collection('activity');
 
                     coll1.insertOne({
-                        ActivityName: 'SignIn',
+                        ActivityName: 'Signed In',
                         DocName: '',
-                        Username: user.Username,
-                        TimeStamp: new Date(),
+                        Username: data.data.username,
+                        TimeStamp: day+" "+time,
                         deleteFlag: 0
                     }, function (err, user) {
 

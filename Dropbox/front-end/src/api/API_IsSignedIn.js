@@ -1,20 +1,10 @@
 
 const api = process.env.REACT_APP_CONTACTS_API_URL || 'http://localhost:3004';
 
-const headers = {
-    'Accept': 'application/json'
-};
-
-export const checkIsSignedIn = (payload) =>
+export const checkIsSignedIn = () =>
 
     fetch(`${api}/IsSignedIn`, {
-        method: 'POST',
-        headers: {
-            ...headers,
-            'Content-Type': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify(payload)
+        credentials: 'include'
     }).then( res => {
         return res.status;
     })

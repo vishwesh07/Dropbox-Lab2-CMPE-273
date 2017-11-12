@@ -8,6 +8,7 @@ import Homepage from "./HomePage";
 import * as API_SignOut from "../api/API_SignOut";
 import Error from "./Error";
 import * as API_IsSignedIn from "../api/API_IsSignedIn";
+import Activity from "./Activity";
 
 class RoutingComponent extends Component {
 
@@ -235,7 +236,7 @@ class RoutingComponent extends Component {
                 )}/>
 
                 <Route exact path="/Activity" render={() => (
-                    <Homepage email={this.state.email} username={this.state.username}  handleIsSignedIn={this.handleIsSignedIn} handleSignOut={this.handleSignOut} />
+                    <Activity email={this.state.email} username={this.state.username}  handleIsSignedIn={this.handleIsSignedIn} handleSignOut={this.handleSignOut} />
                 )}/>
 
                 <Route exact path="/Profile" render={() => (

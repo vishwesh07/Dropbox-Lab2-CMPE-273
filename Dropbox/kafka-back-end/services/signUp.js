@@ -1,6 +1,8 @@
 const shelljs = require('shelljs');
 const path=require('path');
 const mongo = require('./mongo');
+const moment = require('moment-timezone');
+
 const mongoURL = "mongodb://localhost:27017/dropbox";
 
 function handle_request(data,callback) {
@@ -43,13 +45,18 @@ function handle_request(data,callback) {
                             res.value = "Success SignUp";
                             res.data = {username: user.username, firstname: user.firstname, lastname: user.lastname};
 
+                            let d = new Date();
+                            let days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+                            let day = days[d.getDay()];
+                            let time = moment().tz("America/Los_Angeles").format();
+
                             const coll1 = mongo.collection('activity');
 
                             coll1.insertOne({
-                                ActivityName: 'SignUp',
+                                ActivityName: 'Signed Up',
                                 DocName: '',
                                 Username: data.data.username,
-                                TimeStamp: new Date(),
+                                TimeStamp: day+" "+time,
                                 deleteFlag: 0
                             }, function (err, user) {
 

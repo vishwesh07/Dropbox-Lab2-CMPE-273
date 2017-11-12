@@ -1,6 +1,7 @@
 const shelljs = require('shelljs');
 const mongo = require('./mongo');
 const mongoURL = "mongodb://localhost:27017/dropbox";
+const moment = require('moment-timezone');
 
 function handle_request(data,callback) {
 
@@ -32,14 +33,19 @@ function handle_request(data,callback) {
             res.code = "204";
             res.value = "Folder removed";
 
+            let d = new Date();
+            let days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+            let day = days[d.getDay()];
+            let time = moment().tz("America/Los_Angeles").format();
+
             const coll1 = mongo.collection('activity');
 
             //recursive delete entry remaining
             coll1.insertOne({
-                ActivityName: 'removeFolder',
+                ActivityName: 'Removed a Folder',
                 DocName: data.data.folderName,
                 Username: data.data.username,
-                TimeStamp: new Date(),
+                TimeStamp: day+" "+time,
                 deleteFlag: 0
             }, function (err, user) {
 

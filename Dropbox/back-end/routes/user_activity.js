@@ -2,9 +2,9 @@ var express = require('express');
 var router = express.Router();
 var kafka = require('./kafka/client');
 
-router.post('./activity',function(req,res,next){
+router.post('/',function(req,res,next){
 
-    kafka.make_request('login_topic',{"service":"activity","username":req.session.username}, function(err,results){
+    kafka.make_request('login_topic',{"service":"getActivity","username":req.session.username}, function(err,results){
 
         console.log("In response to kafka.make_request for activity service");
 

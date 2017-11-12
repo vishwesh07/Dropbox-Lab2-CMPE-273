@@ -1,66 +1,88 @@
 import React,{Component} from 'react';
 import { withRouter } from 'react-router-dom';
 import * as API_Activity from "../api/API_Activity";
+import * as API_IsSignedIn from "../api/API_IsSignedIn";
 
 class Activity extends Component{
 
     constructor(props) {
         super(props);
         this.state = {
-            email: this.props.email,     // problem
-            user_activity: ''
+            email: this.props.email,
+            username: this.props.username,
+            user_activity: []
         };
     }
 
-    componentDidMount(){
+    componentWillMount(){
 
-        API_Activity.getUserActivity(this.state.email)
+        console.log("In IsSignedIn request of willMount");
+
+        API_IsSignedIn.checkIsSignedIn()
+            .then((status) => {
+
+                    if(status === 200){
+                        console.log("User is authorized to access this page");
+                    }
+                    else{
+                        this.props.history.push("/SignIn");
+                    }
+
+                }
+            );
+
+        API_Activity.getUserActivity()
             .then((data) => {
                 console.log(data);
                 this.setState({
                     ...this.state,
-                    user_activity: data
+                    user_activity: data.activityArr
+                });
+            });
+
+    }
+
+    componentDidMount(){
+
+        API_Activity.getUserActivity()
+            .then((data) => {
+                console.log(data);
+                this.setState({
+                    ...this.state,
+                    user_activity: data.activityArr
                 });
         });
 
     }
 
-    displayActivity = (activity) => {
-        if(activity.FileName !== null){
-            return (
-                <div>
-                    <td>
-                        <img src={folder} height={'30px'} width={'30px'} alt={'Not available'}/>
-                    </td>
-                    <td>
-                        <button type="button" className="btn btn-link" onClick = {(event) => this.navigateFolder(event)} value={doc.DocName} > {doc.DocName} </button>
-                    </td>
-                    <td>
-                        <img src={deleteFile} height={'30px'} width={'30px'} alt={'Not available'} onClick={() => this.handleDelete(doc)}/>
-                    </td>
-                </div>
-            );
-        }
-        else{
-            let filePath = 'http://localhost:3004/'+doc.DocPath+doc.DocName;
-            filePath = filePath.replace("/public","");
-            return(
-                <div>
-                    <td>
-                        <img src={file} height={'30px'} width={'30px'} alt={'Not available'}/>
-                    </td>
-                    <td>
-                        <a href={filePath}>
-                            {doc.DocName}
-                        </a>
-                    </td>
-                    <td>
-                        <img src={deleteFile} height={'30px'} width={'30px'} alt={'Not available'} onClick={() => this.handleDelete(doc)}/>
-                    </td>
-                </div>
-            );
+    pushTo = (page) => {
+
+        console.log("In pushTo "+ page);
+        switch(page) {
+            case "Home":
+                console.log(page);
+                this.props.history.push("/HomePage");
+                break;
+            case "Files":
+                console.log(page);
+                this.props.history.push("/Files");
+                break;
+            case "Groups":
+                console.log(page);
+                this.props.history.push("/Groups");
+                break;
+            case "Activity":
+                console.log(page);
+                this.props.history.push("/Activity");
+                break;
+            case "Profile":
+                console.log(page);
+                this.props.history.push("/Profile");
+                break;
+            default:
         }
     };
+
 
     render(){
         return (
@@ -69,7 +91,7 @@ class Activity extends Component{
                 <div className="row">
                     <div className="col-sm-3 col-md-2 sidebar">
 
-                        <br/> <br/>
+                        <hr style={{height:'10px', border: '0',boxShadow: '0 10px 10px -10px #8c8b8b inset',}}/>
 
                         <input
                             type="button"
@@ -78,51 +100,40 @@ class Activity extends Component{
                             onClick={this.props.handleSignOut}
                         />
 
-                        <br/> <br/>
-
-                        {this.state.message}
-
-                        <div className="form-group">
-                            <label>Folder Name *</label>
-                            &nbsp; &nbsp; &nbsp;
-                            <input
-                                type="text"
-                                name="folderName"
-                                className="span3"
-                                placeholder="Enter Folder Name"
-                                required="required"
-                                autoFocus="autoFocus"
-                                onChange={(event) => {
-                                    this.setState({
-                                        ...this.state,
-                                        foldername: event.target.value
-                                    });
-                                }}
-                            />
-                        </div>
-
-                        <input
-                            type="button"
-                            value="Create Folder"
-                            className="btn"
-                            onClick={this.handleFolderCreation}
-                        />
-
-                        <br/> <br/>
+                        <hr style={{height:'10px', border: '0',boxShadow: '0 10px 10px -10px #8c8b8b inset',}}/>
 
                         <div className="upload-btn-wrapper">
                             <button className="btn">Upload a file</button>
                             <input className={'fileupload'} type="file" name="myfile" onChange={this.handleFileUpload}/>
                         </div>
 
-                        <br/> <br/>
+                        <hr style={{height:'10px', border: '0',boxShadow: '0 10px 10px -10px #8c8b8b inset',}}/>
 
-                        <a href={'Activity.js'}> Activity </a>
+                        <button className="btn" onClick={() => this.pushTo("Home")}>Home</button>
+
+                        <hr style={{height:'10px', border: '0',boxShadow: '0 10px 10px -10px #8c8b8b inset',}}/>
+
+                        <button className="btn" onClick={() => this.pushTo("Files")}>Files</button>
+
+                        <hr style={{height:'10px', border: '0',boxShadow: '0 10px 10px -10px #8c8b8b inset',}}/>
+
+                        <button className="btn" onClick={() => this.pushTo("Groups")}>Groups</button>
+
+                        <hr style={{height:'10px', border: '0',boxShadow: '0 10px 10px -10px #8c8b8b inset',}}/>
+
+                        <button className="btn" onClick={() => this.pushTo("Activity")}>Activity</button>
+
+                        <hr style={{height:'10px', border: '0',boxShadow: '0 10px 10px -10px #8c8b8b inset',}}/>
+
+                        <button className="btn" onClick={() => this.pushTo("Profile")}>Profile</button>
+
+                        <hr style={{height:'10px', border: '0',boxShadow: '0 10px 10px -10px #8c8b8b inset',}}/>
 
                     </div>
-                    <div className="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+                    <div className="col-sm-9 col-md-10 main">
+
                         <h1 className="page-header">
-                            <br/> <br/>
 
                             Welcome
 
@@ -130,28 +141,23 @@ class Activity extends Component{
 
                         </h1>
 
-                        {/*<br/> <br/>*/}
-
-                        {/*Current Path : {this.st.currentPath}*/}
-
                         <br/> <br/>
 
                         <div className="table-responsive">
                             <table className="table table-striped">
                                 <thead>
                                 <tr>
-                                    <th style={{textAlign: 'center'}}>TimeStamp</th>
                                     <th style={{textAlign: 'center'}}>ActivityName</th>
-                                    <th style={{textAlign: 'center'}}>File</th>
+                                    <th style={{textAlign: 'center'}}>Document</th>
+                                    <th style={{textAlign: 'center'}}>TimeStamp</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {this.state.user_docs && (this.state.user_docs.map(doc => (
+                                {this.state.user_activity && (this.state.user_activity.map(activity => (
                                     <tr>
-                                        <td>{this.displayStar(doc)}</td>
-                                        <td>{this.displayDocument(doc)}</td>
-                                        <td>{this.props.username}</td>
-                                        <td>{doc.DocPath}</td>
+                                        <td>{activity.ActivityName}</td>
+                                        <td>{activity.DocName}</td>
+                                        <td>{activity.TimeStamp}</td>
                                     </tr>
                                 )))}
                                 </tbody>

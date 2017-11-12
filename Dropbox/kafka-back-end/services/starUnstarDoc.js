@@ -1,5 +1,6 @@
 const mongo = require('./mongo');
 const mongoURL = "mongodb://localhost:27017/dropbox";
+const moment= require('moment-timezone');
 
 function handle_request(data,callback) {
 
@@ -22,10 +23,15 @@ function handle_request(data,callback) {
 
             else {
 
+                console.log(doc[0]);
+
                 if (doc) {
 
                     let currentStar = data.data.Star;
+
                     let newStar;
+
+                    let activity = "";
 
                     console.log("Current status of star is : " + currentStar);
 
@@ -34,6 +40,13 @@ function handle_request(data,callback) {
                     }
                     else {
                         newStar = 0;
+                    }
+
+                    if(newStar === 1){
+                        activity = "Stared a " + doc[0].DocType;
+                    }
+                    else{
+                        activity = "Unstared a " + doc[0].DocType;
                     }
 
                     try {
@@ -49,13 +62,18 @@ function handle_request(data,callback) {
 
                     console.log('after handle' + res);
 
+                    let d = new Date();
+                    let days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+                    let day = days[d.getDay()];
+                    let time = moment().tz("America/Los_Angeles").format();
+
                     const coll1 = mongo.collection('activity');
 
                     coll1.insertOne({
-                        ActivityName: 'starUnstarFile',
+                        ActivityName: activity,
                         DocName: data.data.DocName,
                         Username: data.data.username,
-                        TimeStamp: new Date(),
+                        TimeStamp: day+" "+time,
                         deleteFlag: 0
                     }, function (err, user) {
 
@@ -63,12 +81,12 @@ function handle_request(data,callback) {
                             console.log(err);
                         }
 
-                        console.log("Activity inserted - starUnstarFile");
+                        console.log("Activity inserted - starUnstarDoc");
 
                     });
 
                     res.code = "204";
-                    res.value = "File Star - Unstar Action Completed";
+                    res.value = "Doc Star - Unstar Action Completed";
 
                     let payloads = [
                         {

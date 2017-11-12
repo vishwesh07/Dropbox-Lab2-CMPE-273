@@ -11,6 +11,7 @@ import folder from '../components/folder.png';
 import deleteFile from '../components/delete.png';
 import * as API_DeleteDoc from "../api/API_DeleteDoc";
 import * as API_IsSignedIn from "../api/API_IsSignedIn";
+import shareDoc from "../components/share.png";
 
 class HomePage extends Component{
 
@@ -33,7 +34,7 @@ class HomePage extends Component{
 
         console.log("In IsSignedIn request of willMount");
 
-        API_IsSignedIn.checkIsSignedIn(this.state)
+        API_IsSignedIn.checkIsSignedIn()
             .then((status) => {
 
                     if(status === 200){
@@ -66,7 +67,9 @@ class HomePage extends Component{
 
         const payload = new FormData();
 
-        payload.append('myfile', event.target.files[0]);
+        payload.append('file', event.target.files[0]);
+
+        payload.append('currentPath',this.st.currentPath);
 
         API_UploadFile.uploadFile(payload)
             .then((status) => {
@@ -81,7 +84,7 @@ class HomePage extends Component{
                         });
                 }
 
-                else if(status === 304){
+                else if(status === 403){
                     this.setState({
                         ...this.state,
                         message: '!! Similar file already exists. !!'
@@ -216,44 +219,103 @@ class HomePage extends Component{
         }
     };
 
+    displayIcon = (doc) => {
+
+        if(doc.DocType === "folder") {
+
+            return (<img src={folder} height={'30px'} width={'30px'} alt={'Not available'}/>);
+
+        }
+        else{
+
+            return(<img src={file} height={'30px'} width={'30px'} alt={'Not available'}/>);
+
+        }
+    };
+
     displayDocument = (doc) => {
         if(doc.DocType === "folder"){
             return (
-                <div>
-
-                    <img src={folder} height={'30px'} width={'30px'} alt={'Not available'}/>
-
                     <button type="button" className="btn btn-link" onClick = {(event) => this.navigateFolder(event)} value={doc.DocName} > {doc.DocName} </button>
-
-                    <img src={deleteFile} height={'30px'} width={'30px'} alt={'Not available'} onClick={() => this.handleDelete(doc)}/>
-
-                </div>
             );
         }
         else{
             let filePath = 'http://localhost:3004/'+doc.DocPath+doc.DocName;
             filePath = filePath.replace("/public","");
             return(
-                <div>
-                        <img src={file} height={'30px'} width={'30px'} alt={'Not available'}/>
-
                         <a href={filePath}>
                             {doc.DocName}
                         </a>
+            );
+        }
+    };
 
-                        <img src={deleteFile} height={'30px'} width={'30px'} alt={'Not available'} onClick={() => this.handleDelete(doc)}/>
+    displayUserName = () => {
+        return(
+            <div>
+                {this.props.username}
+            </div>
+        );
+    };
 
+    displayDocPath = (doc) => {
+        return(
+            <div>
+                <p style={{verticalAlign: "center"}}>{doc.DocPath}</p>
+            </div>
+        );
+    };
+
+    displayBackButtonLogic = () => {
+        if(this.st.currentPath === './public/upload/'+ this.props.email +'/'){
+            return;
+        }
+        else{
+            return (
+                <div>
+                    Go Back :  <button type="button" className="btn btn-link" onClick = {() => this.navigateBackFolder(this.st)} > ... </button>
                 </div>
             );
         }
     };
 
-    displayBackButton = () => {
-        if(this.st.currentPath === './public/upload/'+ this.props.email +'/'){
-            return (<td></td>);
-        }
-        else{
-            return (<td> Go Back :  <button type="button" className="btn btn-link" onClick = {() => this.navigateBackFolder(this.st)} > ... </button> </td>);
+    displayShare = (doc) => {
+
+        return (<img src={shareDoc} height={'30px'} width={'30px'} alt={'Not available'} onClick={() => this.handleStarAction(doc)}/>);
+
+    };
+
+    displayDelete = (doc) => {
+
+        return (<img src={deleteFile} height={'30px'} width={'30px'} alt={'Not available'} onClick={() => this.handleDelete(doc)}/>);
+
+    };
+
+    pushTo = (page) => {
+
+        console.log("In pushTo "+ page);
+        switch(page) {
+            case "Home":
+                console.log(page);
+                this.props.history.push("/HomePage");
+                break;
+            case "Files":
+                console.log(page);
+                this.props.history.push("/Files");
+                break;
+            case "Groups":
+                console.log(page);
+                this.props.history.push("/Groups");
+                break;
+            case "Activity":
+                console.log(page);
+                this.props.history.push("/Activity");
+                break;
+            case "Profile":
+                console.log(page);
+                this.props.history.push("/Profile");
+                break;
+            default:
         }
     };
 
@@ -267,7 +329,7 @@ class HomePage extends Component{
                         <div className="row">
                             <div className="col-sm-3 col-md-2 sidebar">
 
-                                <br/> <br/>
+                                <hr style={{height:'10px', border: '0',boxShadow: '0 10px 10px -10px #8c8b8b inset',}}/>
 
                                 <input
                                     type="button"
@@ -276,7 +338,7 @@ class HomePage extends Component{
                                     onClick={this.props.handleSignOut}
                                 />
 
-                                <br/> <br/>
+                                <hr style={{height:'10px', border: '0',boxShadow: '0 10px 10px -10px #8c8b8b inset',}}/>
 
                                 {this.state.message}
 
@@ -306,21 +368,38 @@ class HomePage extends Component{
                                     onClick={this.handleFolderCreation}
                                 />
 
-                                <br/> <br/>
+                                <hr style={{height:'10px', border: '0',boxShadow: '0 10px 10px -10px #8c8b8b inset',}}/>
 
                                 <div className="upload-btn-wrapper">
                                     <button className="btn">Upload a file</button>
                                     <input className={'fileupload'} type="file" name="myfile" onChange={this.handleFileUpload}/>
                                 </div>
 
-                                <br/> <br/>
+                                <hr style={{height:'10px', border: '0',boxShadow: '0 10px 10px -10px #8c8b8b inset',}}/>
 
-                                <a href={'Activity.js'}> Activity </a>
+                                <button className="btn" onClick={() => this.pushTo("Home")}>Home</button>
+
+                                <hr style={{height:'10px', border: '0',boxShadow: '0 10px 10px -10px #8c8b8b inset',}}/>
+
+                                <button className="btn" onClick={() => this.pushTo("Files")}>Files</button>
+
+                                <hr style={{height:'10px', border: '0',boxShadow: '0 10px 10px -10px #8c8b8b inset',}}/>
+
+                                <button className="btn" onClick={() => this.pushTo("Groups")}>Groups</button>
+
+                                <hr style={{height:'10px', border: '0',boxShadow: '0 10px 10px -10px #8c8b8b inset',}}/>
+
+                                <button className="btn" onClick={() => this.pushTo("Activity")}>Activity</button>
+
+                                <hr style={{height:'10px', border: '0',boxShadow: '0 10px 10px -10px #8c8b8b inset',}}/>
+
+                                <button className="btn" onClick={() => this.pushTo("Profile")}>Profile</button>
+
+                                <hr style={{height:'10px', border: '0',boxShadow: '0 10px 10px -10px #8c8b8b inset',}}/>
 
                             </div>
-                            <div className="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                            <div className="col-sm-9 col-md-10 main"  style={{float: 'left'}}>
                                 <h1 className="page-header">
-                                    <br/> <br/>
 
                                     Welcome
 
@@ -328,35 +407,36 @@ class HomePage extends Component{
 
                                 </h1>
 
-                                {/*<br/> <br/>*/}
-
-                                {/*Current Path : {this.st.currentPath}*/}
-
-                                <br/> <br/>
+                                <br/>
 
                                 <div className="table-responsive">
+
+                                    {this.displayBackButtonLogic()}
+
+                                    <br/>
+
                                     <table className="table table-striped">
                                         <thead>
                                         <tr>
                                             <th style={{textAlign: 'center'}}>Favorite</th>
+                                            <th></th>
                                             <th style={{textAlign: 'center'}}>DocName</th>
                                             <th style={{textAlign: 'center'}}>Owner</th>
                                             <th style={{textAlign: 'center'}}>DocPath</th>
+                                            <th></th>
+                                            <th></th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            {this.displayBackButton()}
-                                            <td></td>
-                                        </tr>
                                         {this.state.user_docs && (this.state.user_docs.map(doc => (
                                             <tr>
                                                 <td>{this.displayStar(doc)}</td>
+                                                <td>{this.displayIcon(doc)}</td>
                                                 <td>{this.displayDocument(doc)}</td>
-                                                <td>{this.props.username}</td>
-                                                <td>{doc.DocPath}</td>
+                                                <td>{this.displayUserName()}</td>
+                                                <td>{this.displayDocPath(doc)}</td>
+                                                <td>{this.displayShare(doc)}</td>
+                                                <td>{this.displayDelete(doc)}</td>
                                             </tr>
                                         )))}
                                         </tbody>

@@ -1,8 +1,8 @@
 
-const api = process.env.REACT_APP_CONTACTS_API_URL || 'http://localhost:3004'
+const api = process.env.REACT_APP_CONTACTS_API_URL || 'http://localhost:3004';
 
 export const uploadFile = (payload) =>
-    fetch(`${api}/docs/upload`, {
+    fetch(`${api}/fileActions/uploadFile`, {
         method: 'POST',
         credentials: 'include',
         body: payload

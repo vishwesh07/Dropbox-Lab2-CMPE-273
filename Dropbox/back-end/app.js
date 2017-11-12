@@ -55,8 +55,8 @@ app.use(expressSessions({
     //duration: 30 * 60 * 1000,
     //activeDuration: 5 * 6 * 1000,
     cookie: {
-        maxAge  : new Date(Date.now() + 120000), //2 Minutes
-        expires : new Date(Date.now() + 120000)  //2 Minutes
+        maxAge  : new Date(Date.now() + 1200000), //2 Minutes
+        expires : new Date(Date.now() + 1200000)  //2 Minutes
     },
     store: new mongoStore({
         url: mongoSessionURL

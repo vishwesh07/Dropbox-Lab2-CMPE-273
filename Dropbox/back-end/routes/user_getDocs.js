@@ -12,6 +12,8 @@ router.post('/', function (req, res, next) {
 
     console.log(req.session.username+" path: "+req.body.currentPath);
 
+    req.session.currentPath = currentPath;
+
     kafka.make_request('login_topic',{"service":"getFiles","username":username,"currentPath":currentPath}, function(err,results){
 
         console.log("In response to kafka.make_request for getDocs service");

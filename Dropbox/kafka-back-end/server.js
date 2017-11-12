@@ -111,7 +111,6 @@ consumer.on('message', function (message) {
     }
 
     else if(data.data.service === 'uploadFile'){
-        data.data.changeDestination = changeDestination;
         uploadFile.handle_request(data, function(err,payloads){
             console.log("In uploadFile handle request"+ payloads);
             producer.send(payloads, function(err, data){

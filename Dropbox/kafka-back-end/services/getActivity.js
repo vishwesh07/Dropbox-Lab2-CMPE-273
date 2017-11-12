@@ -14,7 +14,7 @@ function handle_request(data,callback) {
     mongo.connect(mongoURL, function () {
         console.log('Connected to mongo at: ' + mongoURL);
         const coll = mongo.collection('activity');
-        coll.find({Username: data.data.username}).limit(15).toArray(function (err, activities) {
+        coll.find({Username: data.data.username}).sort({TimeStamp:-1}).limit(15).toArray(function (err, activities) {
 
             if (err) {
                 throw err;
@@ -25,9 +25,8 @@ function handle_request(data,callback) {
 
                 activityArr = activities.map(function (activity) {
                     let activityJSON = {};
-                    activityJSON.DocName = activity.ActivityName;
-                    activityJSON.DocType = activity.DocName;
-                    activityJSON.Username = activity.Username;
+                    activityJSON.ActivityName = activity.ActivityName;
+                    activityJSON.DocName = activity.DocName;
                     activityJSON.TimeStamp = activity.TimeStamp;
                     return activityJSON;
                 });

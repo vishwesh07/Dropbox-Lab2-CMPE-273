@@ -1,5 +1,7 @@
 import React,{Component} from 'react';
 import { withRouter } from 'react-router-dom';
+import dropbox_name from './dropbox_.jpg';
+import dropbox_logo from './dropbox_logo_.jpg';
 // import PropTypes from 'prop-types';
 
 class SignIn extends Component{
@@ -9,7 +11,7 @@ class SignIn extends Component{
         this.state = {
             username: '',
             password: '',
-            message: ''
+            message: '',
         };
     }
 
@@ -26,11 +28,24 @@ class SignIn extends Component{
         return (
 
             <div className="container-fluid">
+
+                <br/>
+
+                <img src={dropbox_logo} alt={"Not available"}/>
+
+                &nbsp; &nbsp; &nbsp;
+
+                <img src={dropbox_name} alt={"Not available"}/>
+
+                <hr style={{height:'10px', border: '0',boxShadow: '0 10px 10px -10px #8c8b8b inset',}}/>
+
                 <div className="row justify-content-md-center">
+
                     <div className="span3">
+
                         <form>
 
-                            <br/> <br/> <br/> <br/> <br/> <br/>
+                            <br/> <br/>
 
                             <div className="form-group">
                                 <h2>Sign In</h2>

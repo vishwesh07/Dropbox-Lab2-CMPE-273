@@ -1,5 +1,7 @@
 import React,{Component} from 'react';
 import withRouter from "react-router-dom/es/withRouter";
+import dropbox_name from './dropbox_.jpg';
+import dropbox_logo from './dropbox_logo_.jpg';
 // import PropTypes from 'prop-types';
 
 class SignUp extends Component{
@@ -30,10 +32,21 @@ class SignUp extends Component{
             return(
 
                 <div className="container-fluid">
+
+                    <br/>
+
+                    <img src={dropbox_logo} alt={"Not available"}/>
+
+                    &nbsp; &nbsp; &nbsp;
+
+                    <img src={dropbox_name} alt={"Not available"}/>
+
+                    <hr style={{height:'10px', border: '0',boxShadow: '0 10px 10px -10px #8c8b8b inset',}}/>
+
                     <div className="row justify-content-md-center">
                 <div className="span3">
 
-                    <br/> <br/> <br/> <br/> <br/> <br/>
+                    <br/> <br/>
 
                     <form>
 
@@ -133,8 +146,6 @@ class SignUp extends Component{
                         </div>
 
                         <div className="form-group">
-                            <label><input type="checkbox" name="terms"/> I agree to Dropbox Terms.</label>
-                            <br/>
                             <input
                                 type="button"
                                 value="Sign up"
